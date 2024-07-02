@@ -20,7 +20,7 @@ if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
-  SystemNavigationBar.setNavigationColor('translucent');
+  SystemNavigationBar.setNavigationColor('transparent');
 }
 
 const imgs = [
