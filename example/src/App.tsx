@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 
 import {
   Image,
@@ -69,6 +69,7 @@ const shuffle = (arr: any[]) => {
 };
 
 export default function App() {
+  const [showTools, setShowTools] = useState(true);
   const [imgIndex, setImgIndex] = useState(0);
   const [colors, setColors] = useState<string[]>([]);
   const [brightness, setBrightness] = useState(DEFAULTS.brightness);
@@ -80,9 +81,7 @@ export default function App() {
     getColors(imgs[imgIndex])
       .then((data) => {
         if (data.platform === 'android') {
-          LayoutAnimation.easeInEaseOut();
           setColors([data.dominant, data.average, data.vibrant, data.muted]);
-          console.log('data', data);
         }
       })
       .catch(console.error);
@@ -106,175 +105,224 @@ export default function App() {
           }}
         />
       )}
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ width: 70 }}>Speed</Text>
-            <MySlider
-              value={speed}
-              minimumValue={0}
-              maximumValue={100}
-              onValueChange={setSpeed}
-            />
-            <Text style={{ width: 32, textAlign: 'center' }}>
-              {speed.toFixed(1)}
-            </Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ width: 70 }}>Brightness</Text>
-            <MySlider
-              value={brightness}
-              minimumValue={0}
-              maximumValue={2}
-              onValueChange={setBrightness}
-            />
-            <Text style={{ width: 32, textAlign: 'center' }}>
-              {brightness.toFixed(1)}
-            </Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ width: 70 }}>Contrast</Text>
-            <MySlider
-              style={{ width: 200, height: 40 }}
-              value={contrast}
-              minimumValue={0}
-              maximumValue={2}
-              onValueChange={setContrast}
-            />
-            <Text style={{ width: 32, textAlign: 'center' }}>
-              {contrast.toFixed(1)}
-            </Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ width: 70 }}>Frequency</Text>
-            <MySlider
-              value={frequency}
-              minimumValue={0}
-              maximumValue={100}
-              onValueChange={setFrequency}
-            />
-            <Text style={{ width: 32, textAlign: 'center' }}>
-              {frequency.toFixed(1)}
-            </Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ width: 70 }}>Amplitude</Text>
-            <MySlider
-              value={amplitude}
-              minimumValue={0}
-              maximumValue={100}
-              onValueChange={setAmplitude}
-            />
-            <Text style={{ width: 32, textAlign: 'center' }}>
-              {amplitude.toFixed(1)}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={{ marginTop: 16 }}
-            onPress={() => {
-              setSpeed(DEFAULTS.speed);
-              setBrightness(DEFAULTS.brightness);
-              setContrast(DEFAULTS.contrast);
-              setFrequency(DEFAULTS.frequency);
-              setAmplitude(DEFAULTS.amplitude);
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                }}
-              >
-                Reset
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+      {showTools && (
         <View
           style={{
-            marginLeft: 64,
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <View style={{ flexDirection: 'row', marginBottom: 16 }}>
-            {imgs?.map((img, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  LayoutAnimation.easeInEaseOut();
-                  setImgIndex(index);
-                }}
-              >
-                <Image
-                  source={img}
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 8,
-                    borderWidth: 2,
-                    borderColor: '#fff',
-                    margin: 8,
-                  }}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-          <Image
-            source={imgs[imgIndex]}
-            style={{
-              width: 300,
-              height: 300,
-              borderRadius: 8,
-              borderWidth: 2,
-              borderColor: '#fff',
-            }}
-            onError={(e) => {
-              console.log('error', e.nativeEvent);
-            }}
-          />
           <View
             style={{
-              flexDirection: 'row',
               marginTop: 16,
               alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {colors?.map((color, index) => (
-              <View
-                key={color + index}
-                style={{
-                  width: 60,
-                  height: 60,
-                  backgroundColor: color,
-                  borderRadius: 8,
-                  borderWidth: 2,
-                  borderColor: '#fff',
-                  margin: 8,
-                }}
-              />
-            ))}
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              LayoutAnimation.easeInEaseOut();
-              setColors(shuffle(colors));
-            }}
-            style={{
-              marginTop: 16,
-            }}
-          >
-            <Text
+            <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+              {imgs?.map((img, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    LayoutAnimation.easeInEaseOut();
+                    setImgIndex(index);
+                  }}
+                >
+                  <Image
+                    source={img}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 8,
+                      borderWidth: index === imgIndex ? 2 : 0,
+                      borderColor: '#fff',
+                      margin: 8,
+                      opacity: index === imgIndex ? 1 : 0.5,
+                    }}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Image
+              source={imgs[imgIndex]}
               style={{
-                fontSize: 24,
+                width: 256,
+                height: 256,
+                borderRadius: 8,
+                borderWidth: 2,
+                borderColor: '#fff',
+              }}
+              onError={(e) => {
+                console.log('error', e.nativeEvent);
+              }}
+            />
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              🔀
-            </Text>
-          </TouchableOpacity>
+              {colors?.map((color, index) => (
+                <Fragment key={index}>
+                  {index === 2 && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setColors(shuffle(colors));
+                      }}
+                      style={{
+                        margin: 8,
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.text,
+                          {
+                            fontSize: 24,
+                          },
+                        ]}
+                      >
+                        🔀
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  <View style={{ alignItems: 'center' }}>
+                    <Text
+                      style={[
+                        styles.text,
+                        {
+                          fontSize: 12,
+                        },
+                      ]}
+                    >
+                      {color}
+                    </Text>
+                    <View
+                      style={{
+                        width: 42,
+                        height: 42,
+                        backgroundColor: color,
+                        borderRadius: 8,
+                        borderWidth: 2,
+                        borderColor: '#fff',
+                        margin: 8,
+                      }}
+                    />
+                  </View>
+                </Fragment>
+              ))}
+            </View>
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={[styles.text, { width: 70 }]}>Speed</Text>
+              <MySlider
+                value={speed}
+                minimumValue={0}
+                maximumValue={100}
+                onValueChange={setSpeed}
+              />
+              <Text style={[styles.text, { width: 32, textAlign: 'center' }]}>
+                {speed.toFixed(1)}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={[styles.text, { width: 70 }]}>Brightness</Text>
+              <MySlider
+                value={brightness}
+                minimumValue={0}
+                maximumValue={2}
+                onValueChange={setBrightness}
+              />
+              <Text style={[styles.text, { width: 32, textAlign: 'center' }]}>
+                {brightness.toFixed(1)}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={[styles.text, { width: 70 }]}>Contrast</Text>
+              <MySlider
+                style={{ width: 200, height: 40 }}
+                value={contrast}
+                minimumValue={0}
+                maximumValue={2}
+                onValueChange={setContrast}
+              />
+              <Text style={[styles.text, { width: 32, textAlign: 'center' }]}>
+                {contrast.toFixed(1)}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={[styles.text, { width: 70 }]}>Frequency</Text>
+              <MySlider
+                value={frequency}
+                minimumValue={0}
+                maximumValue={100}
+                onValueChange={setFrequency}
+              />
+              <Text style={[styles.text, { width: 32, textAlign: 'center' }]}>
+                {frequency.toFixed(1)}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={[styles.text, { width: 70 }]}>Amplitude</Text>
+              <MySlider
+                value={amplitude}
+                minimumValue={0}
+                maximumValue={100}
+                onValueChange={setAmplitude}
+              />
+              <Text style={[styles.text, { width: 32, textAlign: 'center' }]}>
+                {amplitude.toFixed(1)}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                marginTop: 16,
+              }}
+              onPress={() => {
+                setSpeed(DEFAULTS.speed);
+                setBrightness(DEFAULTS.brightness);
+                setContrast(DEFAULTS.contrast);
+                setFrequency(DEFAULTS.frequency);
+                setAmplitude(DEFAULTS.amplitude);
+              }}
+            >
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    fontSize: 24,
+                    fontWeight: 'bold',
+                  },
+                ]}
+              >
+                ♻️
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
+      <TouchableOpacity
+        style={{ position: 'absolute', bottom: 32 }}
+        onPress={() => {
+          LayoutAnimation.easeInEaseOut();
+          setShowTools(!showTools);
+        }}
+      >
+        <Text
+          style={[
+            styles.text,
+            {
+              fontSize: 32,
+              fontWeight: 'bold',
+            },
+          ]}
+        >
+          {showTools ? '🙈' : '👀'}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -285,9 +333,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+  text: {
+    color: '#fff',
   },
 });
