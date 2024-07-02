@@ -30,9 +30,9 @@ import { MeshGradient } from "@kuss/react-native-mesh-gradient";
     width: '100%',
   }}
 />
+```
 
 More at [example/App.tsx](./example/src/App.tsx)
-```
 
 ## Interface
 
