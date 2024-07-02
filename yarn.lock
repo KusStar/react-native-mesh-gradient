@@ -13038,6 +13038,7 @@ __metadata:
     react: 18.2.0
     react-native: 0.74.3
     react-native-image-colors: ^2.4.0
+    react-native-system-navigation-bar: ^2.6.4
   languageName: unknown
   linkType: soft
 
@@ -13069,6 +13070,16 @@ __metadata:
     react-native: "*"
   languageName: unknown
   linkType: soft
+
+"react-native-system-navigation-bar@npm:^2.6.4":
+  version: 2.6.4
+  resolution: "react-native-system-navigation-bar@npm:2.6.4"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: b0fe20a00c5640ec98efb80c4441c0b38ea9fd7c87289be588bd27ff2553f4e5e2d3c9df9e4c752c7f6bcc135c7a848eea37c94e97259dd3f4e47de8e84d0de5
+  languageName: node
+  linkType: hard
 
 "react-native@npm:0.74.3":
   version: 0.74.3
