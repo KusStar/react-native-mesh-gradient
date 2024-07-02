@@ -1,6 +1,6 @@
 # react-native-mesh-gradient
 
-MeshGradient for React Naitve.
+MeshGradient for React Native.
 
 https://github.com/KusStar/react-native-mesh-gradient/assets/21271495/35b84584-614e-4ffe-9801-1c6547b5eebc
 
