@@ -11,14 +11,14 @@ You can download the example apk in [releases](https://github.com/KusStar/react-
 Only supports Android for now.
 
 ```sh
-# npm install react-native-mesh-gradient
-yarn add react-native-mesh-gradient
+# npm install @kuss/react-native-mesh-gradient
+yarn add @kuss/react-native-mesh-gradient
 ```
 
 ## Usage
 
 ```js
-import { MeshGradient } from "react-native-mesh-gradient";
+import { MeshGradient } from "@kuss/react-native-mesh-gradient";
 
 <MeshGradient
   colors={['red', 'yellow', 'green', 'blue']}
