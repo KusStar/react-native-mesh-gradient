@@ -1,7 +1,9 @@
 import {
+  View,
   requireNativeComponent,
   UIManager,
   Platform,
+  processColor,
   type ViewStyle,
 } from 'react-native';
 
@@ -11,16 +13,49 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-type MeshGradientProps = {
-  color: string;
-  style: ViewStyle;
-};
-
 const ComponentName = 'MeshGradientView';
 
-export const MeshGradientView =
+const NativeMeshGradientView =
   UIManager.getViewManagerConfig(ComponentName) != null
-    ? requireNativeComponent<MeshGradientProps>(ComponentName)
+    ? requireNativeComponent<any>(ComponentName)
     : () => {
         throw new Error(LINKING_ERROR);
       };
+
+export type MeshGradientViewProps = {
+  style?: ViewStyle;
+  speed?: number;
+  colors: string[];
+  brightness?: number;
+  contrast?: number;
+  frequency?: number;
+  amplitude?: number;
+};
+
+export const MeshGradientView = ({
+  style,
+  speed = 2,
+  // 0 - 2
+  brightness = 1,
+  // 0 - 2
+  contrast = 1,
+  colors = ['red', 'yellow', 'green', 'blue'],
+  frequency = 5,
+  amplitude = 30,
+}: MeshGradientViewProps) => {
+  return (
+    <View style={style}>
+      <NativeMeshGradientView
+        style={{
+          flex: 1,
+        }}
+        speed={speed}
+        brightness={brightness}
+        contrast={contrast}
+        frequency={frequency}
+        amplitude={amplitude}
+        colors={colors.map((color) => processColor(color))}
+      />
+    </View>
+  );
+};
