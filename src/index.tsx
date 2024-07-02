@@ -22,8 +22,11 @@ const NativeMeshGradientView =
         throw new Error(LINKING_ERROR);
       };
 
-export type MeshGradientViewProps = {
+export type MeshGradientProps = {
   style?: ViewStyle;
+  /**
+   * defau
+   */
   speed?: number;
   colors: string[];
   brightness?: number;
@@ -32,7 +35,7 @@ export type MeshGradientViewProps = {
   amplitude?: number;
 };
 
-export const MeshGradientView = ({
+export const MeshGradient = ({
   style,
   speed = 2,
   // 0 - 2
@@ -42,7 +45,7 @@ export const MeshGradientView = ({
   colors = ['red', 'yellow', 'green', 'blue'],
   frequency = 5,
   amplitude = 30,
-}: MeshGradientViewProps) => {
+}: MeshGradientProps) => {
   return (
     <View style={style}>
       <NativeMeshGradientView
