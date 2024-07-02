@@ -25,13 +25,28 @@ const NativeMeshGradientView =
 export type MeshGradientProps = {
   style?: ViewStyle;
   /**
-   * defau
+   * defaults to 2, > 0
    */
   speed?: number;
+  /*
+   * defaults to ['red', 'yellow', 'green', 'blue'], must be four colors
+   */
   colors: string[];
+  /**
+   * defaults to 1, 0 - 2
+   */
   brightness?: number;
+  /**
+   * defaults to 1, 0 - 2
+   */
   contrast?: number;
+  /**
+   * defaults to 5, > 0
+   */
   frequency?: number;
+  /**
+   * defaults to 30, > 0
+   */
   amplitude?: number;
 };
 
