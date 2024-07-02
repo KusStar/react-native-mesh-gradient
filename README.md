@@ -4,10 +4,15 @@ MeshGradient for React Native.
 
 https://github.com/KusStar/react-native-mesh-gradient/assets/21271495/35b84584-614e-4ffe-9801-1c6547b5eebc
 
+You can download the example apk in [releases](https://github.com/KusStar/react-native-mesh-gradient/releases).
+
 ## Installation
 
+Only supports Android for now.
+
 ```sh
-npm install react-native-mesh-gradient
+# npm install react-native-mesh-gradient
+yarn add react-native-mesh-gradient
 ```
 
 ## Usage
