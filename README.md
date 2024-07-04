@@ -69,6 +69,7 @@ export type MeshGradientProps = {
 ## Thanks
 
 - The [shader](https://github.com/KusStar/react-native-mesh-gradient/blob/d676e2e3f560282835283117f052a78bdb1eb809/android/src/main/java/com/meshgradient/MeshGradientRenderer.kt#L17-L75) code is copied from [https://www.shadertoy.com/view/4t2SDh](https://www.shadertoy.com/view/4t2SDh) by [hahnzhu](https://www.shadertoy.com/user/hahnzhu).
+- [Timeless's Api - Bing Random](https://apifox.com/apidoc/shared-faff130e-7aa3-42da-9f93-574b16c8acda/api-30781027), for getting the random bing wallpaper.
 
 ## Contributing
 

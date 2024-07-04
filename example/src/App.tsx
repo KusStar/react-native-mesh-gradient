@@ -10,6 +10,8 @@ import {
   UIManager,
   Platform,
   StatusBar,
+  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { MeshGradient } from '@kuss/react-native-mesh-gradient';
 import { getColors } from 'react-native-image-colors';
@@ -22,14 +24,6 @@ if (Platform.OS === 'android') {
   }
   SystemNavigationBar.setNavigationColor('transparent');
 }
-
-const imgs = [
-  require('./assets/blond.jpg'),
-  require('./assets/redbone.jpg'),
-  require('./assets/brat.jpg'),
-  require('./assets/jubilee.jpg'),
-  require('./assets/nwjns.jpg'),
-];
 
 const DEFAULTS = {
   speed: 5,
@@ -53,42 +47,67 @@ const MySlider = (props: SliderProps) => {
   );
 };
 
-const shuffle = (arr: any[]) => {
-  const res = [...arr];
-  let currentIndex = arr.length,
-    temporaryValue,
-    randomIndex;
-  // While there remain elements to shuffle...
-  while (currentIndex !== 0) {
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-    // And swap it with the current element.
-    temporaryValue = res[currentIndex];
-    res[currentIndex] = res[randomIndex];
-    res[randomIndex] = temporaryValue;
-  }
-  return res;
+const useDimensions = () => {
+  const [width, setWidth] = useState(Dimensions.get('window').width);
+  const [height, setHeight] = useState(Dimensions.get('window').height);
+  useEffect(() => {
+    const onLayout = ({
+      nativeEvent: {
+        layout: { width, height },
+      },
+    }: any) => {
+      setWidth(width);
+      setHeight(height);
+    };
+    const listener = Dimensions.addEventListener('change', onLayout);
+    return () => {
+      listener.remove();
+    };
+  }, []);
+  return { width, height };
 };
 
 export default function App() {
+  const { height, width } = useDimensions();
+  const isLandscape = width > height;
   const [showTools, setShowTools] = useState(true);
-  const [imgIndex, setImgIndex] = useState(0);
   const [colors, setColors] = useState<string[]>([]);
   const [brightness, setBrightness] = useState(DEFAULTS.brightness);
   const [contrast, setContrast] = useState(DEFAULTS.contrast);
   const [speed, setSpeed] = useState(DEFAULTS.speed);
   const [amplitude, setAmplitude] = useState(DEFAULTS.amplitude);
   const [frequency, setFrequency] = useState(DEFAULTS.frequency);
+  const [imgSource, setImgSource] = useState<string>();
+  const loadImgSource = async () => {
+    setImgSource(undefined);
+    const res = await fetch(
+      `https://api.timelessq.com/bing/random?format=json`
+    );
+    const data = await res.json();
+    const imgUrl = data.data.url;
+    const colorsData = await getColors(imgUrl);
+    setImgSource(imgUrl);
+    if (colorsData.platform === 'android') {
+      console.log('colorsData', colorsData);
+      let lightColors = Object.entries(colorsData)
+        .filter(([key]) => key.includes('light_'))
+        .map(([_, value]) => value);
+      if (lightColors.length < 4) {
+        lightColors = lightColors.concat([
+          colorsData.average,
+          colorsData.dominant,
+          colorsData.vibrant,
+          colorsData.muted,
+        ]);
+      }
+      lightColors = lightColors.slice(0, 4);
+      console.log('lightColors', lightColors);
+      setColors(lightColors);
+    }
+  };
   useEffect(() => {
-    getColors(imgs[imgIndex])
-      .then((data) => {
-        if (data.platform === 'android') {
-          setColors([data.dominant, data.average, data.vibrant, data.muted]);
-        }
-      })
-      .catch(console.error);
-  }, [imgIndex]);
+    loadImgSource();
+  }, []);
   return (
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" />
@@ -104,51 +123,52 @@ export default function App() {
         />
       )}
       {showTools && (
-        <View style={styles.toolsContainer}>
+        <View
+          style={[
+            styles.toolsContainer,
+            isLandscape && {
+              flexDirection: 'row',
+            },
+          ]}
+        >
           <View style={styles.imgContainer}>
-            <View style={styles.imgList}>
-              {imgs?.map((img, index) => (
+            <View style={styles.refresh}>
+              {imgSource ? (
                 <TouchableOpacity
-                  key={index}
                   onPress={() => {
-                    LayoutAnimation.easeInEaseOut();
-                    setImgIndex(index);
+                    loadImgSource();
                   }}
                 >
-                  <Image
-                    source={img}
-                    style={[
-                      styles.imgToPick,
-                      // eslint-disable-next-line react-native/no-inline-styles
-                      {
-                        borderWidth: index === imgIndex ? 2 : 0,
-                        opacity: index === imgIndex ? 1 : 0.5,
-                      },
-                    ]}
-                  />
+                  <Text style={{ fontSize: 24 }}>🔀</Text>
                 </TouchableOpacity>
-              ))}
+              ) : (
+                <ActivityIndicator color={'#fff'} size={24} />
+              )}
             </View>
-            <Image
-              source={imgs[imgIndex]}
-              style={styles.bigImg}
-              onError={(e) => {
-                console.log('error', e.nativeEvent);
-              }}
-            />
+            <View
+              style={[
+                styles.bigImg,
+                {
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+              ]}
+            >
+              {imgSource ? (
+                <Image
+                  source={{ uri: imgSource }}
+                  style={styles.bigImg}
+                  onError={(e) => {
+                    console.log('error', e.nativeEvent);
+                  }}
+                />
+              ) : (
+                <ActivityIndicator color={'#fff'} size={64} />
+              )}
+            </View>
             <View style={styles.colorHints}>
               {colors?.map((color, index) => (
                 <Fragment key={index}>
-                  {index === 2 && (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setColors(shuffle(colors));
-                      }}
-                      style={styles.randomBtn}
-                    >
-                      <Text style={[styles.text, styles.random]}>🔀</Text>
-                    </TouchableOpacity>
-                  )}
                   <View style={styles.colorHintContainer}>
                     <Text style={[styles.text, styles.colorHintLabel]}>
                       {color}
@@ -166,6 +186,7 @@ export default function App() {
               ))}
             </View>
           </View>
+          <View style={styles.spacing} />
           <View style={styles.sliderSettings}>
             <View style={styles.sliderContainer}>
               <Text style={[styles.text, styles.sliderLabel]}>Speed</Text>
@@ -295,7 +316,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 16,
   },
-  imgList: {
+  refresh: {
+    height: 32,
     flexDirection: 'row',
     marginBottom: 16,
   },
@@ -341,7 +363,6 @@ const styles = StyleSheet.create({
   },
   sliderSettings: {
     alignItems: 'center',
-    marginTop: 16,
   },
   sliderValueText: {
     fontSize: 16,
@@ -364,5 +385,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
+  },
+  spacing: {
+    margin: 16,
   },
 });
