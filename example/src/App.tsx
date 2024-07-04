@@ -11,7 +11,7 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
-import { MeshGradient } from 'react-native-mesh-gradient';
+import { MeshGradient } from '@kuss/react-native-mesh-gradient';
 import { getColors } from 'react-native-image-colors';
 import Slider, { type SliderProps } from '@react-native-community/slider';
 import SystemNavigationBar from 'react-native-system-navigation-bar';

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-mesh-gradient": ["./src/index"]
+      "@kuss/react-native-mesh-gradient": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
