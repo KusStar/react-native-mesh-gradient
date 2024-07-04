@@ -1,0 +1,91 @@
+diff --git a/node_modules/react-native-image-colors/android/src/main/java/com/reactnativeimagecolors/ImageColorsModule.kt b/node_modules/react-native-image-colors/android/src/main/java/com/reactnativeimagecolors/ImageColorsModule.kt
+index 02dc1b2..d7e1dcb 100644
+--- a/node_modules/react-native-image-colors/android/src/main/java/com/reactnativeimagecolors/ImageColorsModule.kt
++++ b/node_modules/react-native-image-colors/android/src/main/java/com/reactnativeimagecolors/ImageColorsModule.kt
+@@ -7,19 +7,19 @@ import android.util.Base64
+ import android.util.Log
+ import android.webkit.URLUtil
+ import androidx.palette.graphics.Palette
+-
+ import expo.modules.core.errors.ModuleDestroyedException
+ import expo.modules.kotlin.Promise
+ import expo.modules.kotlin.modules.Module
+ import expo.modules.kotlin.modules.ModuleDefinition
+ import expo.modules.kotlin.records.Field
+ import expo.modules.kotlin.records.Record
+-
+-import kotlinx.coroutines.*
+-import kotlin.math.ceil
+-
++import kotlinx.coroutines.CoroutineScope
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.cancel
++import kotlinx.coroutines.launch
+ import java.net.MalformedURLException
+ import java.net.URI
++import kotlin.math.ceil
+ 
+ class Config : Record {
+   @Field
+@@ -79,11 +79,11 @@ class ImageColorsModule : Module() {
+   }
+ 
+   private fun parseFallbackColor(hex: String): String {
+-    if(!hex.matches(Regex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"))) {
++    if (!hex.matches(Regex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"))) {
+       throw Exception("Invalid fallback hex color. Must be in the format #ffffff or #fff")
+     }
+ 
+-    if(hex.length == 7) {
++    if (hex.length == 7) {
+       return hex
+     }
+ 
+@@ -145,6 +145,8 @@ class ImageColorsModule : Module() {
+           val paletteBuilder = Palette.Builder(image)
+           val result: MutableMap<String, String> = mutableMapOf()
+ 
++
++
+           result["average"] = getHex(calculateAverageColor(image, config.pixelSpacing))
+           result["platform"] = "android"
+ 
+@@ -159,7 +161,14 @@ class ImageColorsModule : Module() {
+             result["darkMuted"] = getHex(palette.getDarkMutedColor(fallbackColorInt))
+             result["lightMuted"] = getHex(palette.getLightMutedColor(fallbackColorInt))
+ 
++            val lightColors = PaletteUtil.getLightColorsFromBitmap(palette, image)
++            lightColors.forEachIndexed { index, color ->
++              val light = getHex(color.rgb)
++              Log.d("[ImageColors]", "light_$index: $light")
++              result["light_$index"] = light
++            }
+             promise.resolve(result)
++
+           } catch (err: Exception) {
+             result["dominant"] = fallbackColor
+             result["vibrant"] = fallbackColor
+diff --git a/node_modules/react-native-image-colors/android/src/main/java/com/reactnativeimagecolors/PaletteUtils.kt b/node_modules/react-native-image-colors/android/src/main/java/com/reactnativeimagecolors/PaletteUtils.kt
+new file mode 100644
+index 0000000..be0fa0c
+--- /dev/null
++++ b/node_modules/react-native-image-colors/android/src/main/java/com/reactnativeimagecolors/PaletteUtils.kt
+@@ -0,0 +1,18 @@
++package com.reactnativeimagecolors
++
++import android.graphics.Bitmap
++import androidx.palette.graphics.Palette
++
++object PaletteUtil {
++  fun getLightColorsFromBitmap(palette: Palette, bitmap: Bitmap): List<Palette.Swatch> {
++      val lightSwatches = palette.swatches.filter { isColorLight(it.rgb) }
++      return lightSwatches
++  }
++
++  private fun isColorLight(color: Int): Boolean {
++    val darkness = 1 - (0.299 * android.graphics.Color.red(color) +
++      0.587 * android.graphics.Color.green(color) +
++      0.114 * android.graphics.Color.blue(color)) / 255
++    return darkness < 0.5 // Consider colors with darkness less than 0.5 as light
++  }
++}
